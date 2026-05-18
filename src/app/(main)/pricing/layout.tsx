@@ -1,83 +1,55 @@
 import type { Metadata } from 'next';
+import { CLOUD_PLANS, SELF_HOSTED_PLANS } from '@/app/data/pricing';
 
 export const metadata: Metadata = {
-	title: 'Convoy Pricing | Cloud & Self-Hosted Webhook Gateway Solutions',
-	description: 'Find the right webhook plan for your scale. Choose between cloud-hosted solutions starting at $99/month or enterprise self-hosted options.',
+	title: 'Convoy Pricing | Webhooks Gateway - Cloud & Self-Hosted',
+	description:
+		"Simple, transparent pricing for Convoy's webhook gateway. Start free, scale to billions. Cloud plans from $0. Self-hosted from $249/mo.",
 	openGraph: {
-		title: 'Convoy Webhook Gateway Pricing Plans',
-		description: 'Find the right webhook plan for your scale. Choose between cloud-hosted solutions starting at $99/month or enterprise self-hosted options.',
+		title: 'Convoy Pricing | Webhooks Gateway',
+		description: "Simple, transparent pricing for Convoy's webhook gateway. Start free, scale to billions.",
 		type: 'website',
-		images: [
-			{
-				url: '/static/Pricing-OG.png',
-				width: 1200,
-				height: 630,
-				alt: 'Convoy Pricing Plans'
-			}
-		]
+		images: [{ url: '/static/Pricing-OG.png', width: 1200, height: 630, alt: 'Convoy Pricing' }],
 	},
 	twitter: {
 		card: 'summary_large_image',
-		title: 'Convoy Webhook Gateway Pricing Plans',
-		description: 'Find the right webhook plan for your scale. Choose between cloud-hosted solutions starting at $99/month or enterprise self-hosted options.',
-		images: ['/static/Pricing-OG.png']
+		title: 'Convoy Pricing | Webhooks Gateway',
+		description: "Simple, transparent pricing for Convoy's webhook gateway. Start free, scale to billions.",
+		images: ['/static/Pricing-OG.png'],
 	},
-	alternates: {
-		canonical: '/pricing'
-	},
-	keywords: 'webhook gateway pricing, webhook gateway plans, webhook gateway costs, webhook gateway pricing comparison'
-
+	alternates: { canonical: '/pricing' },
+	keywords: 'webhook gateway pricing, webhook infrastructure pricing, convoy pricing, svix alternative',
 };
 
 const jsonLd = {
 	'@context': 'https://schema.org',
 	'@type': 'Product',
 	name: 'Convoy',
-	description: 'Find the right webhook plan for your scale. Choose between cloud-hosted solutions starting at $99/month or enterprise self-hosted options.',
+	description: 'High-performance webhooks gateway, cloud and self-hosted.',
 	offers: {
 		'@type': 'AggregateOffer',
 		priceCurrency: 'USD',
 		offers: [
-			{
+			...CLOUD_PLANS.map(p => ({
 				'@type': 'Offer',
-				name: 'Community',
-				price: '0',
+				name: p.name,
+				price: String(p.monthlyPrice),
 				priceCurrency: 'USD',
-				description:
-					'Perfect for developers exploring self-hosted solutions, the Community plan provides everything you need to reliably manage webhooks in your own environment. Start simple with no cost and scale as your needs grow.'
-			},
-			{
+			})),
+			...SELF_HOSTED_PLANS.map(p => ({
 				'@type': 'Offer',
-				name: 'Premium',
-				price: 'Custom',
+				name: `Self-Hosted ${p.name}`,
+				price: String(p.monthlyPrice),
 				priceCurrency: 'USD',
-				description:
-					'Built for organizations with advanced requirements, the Premium plan offers unlimited flexibility and full control. Customize your webhook gateway with premium features and priority support to meet enterprise demands'
-			},
-			{
-				'@type': 'Offer',
-				name: 'Pro',
-				price: '99',
-				priceCurrency: 'USD',
-				description:
-					'Designed for small teams and startups, the Pro plan offers essential webhook delivery features. Get started quickly with a simple, predictable pricing model.'
-			},
-			{
-				'@type': 'Offer',
-				name: 'Enterprise',
-				price: 'Custom',
-				priceCurrency: 'USD',
-				description: 'Tailored for scale-ups and large organizations, the Enterprise plan provides custom solutions for complex webhook needs'
-			}
-		]
-	}
+			})),
+		],
+	},
 };
 
 export default function PricingLayout({ children }: { children: React.ReactNode }) {
 	return (
 		<div>
 			<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-
 			{children}
 		</div>
 	);
