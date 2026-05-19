@@ -204,12 +204,12 @@ export default function BillingCalculator({ plans, calcAddons, svixFormula }: Pr
 						</div>
 					</div>
 
-					{calc.svixEstimate != null && (
+					{calc.svixEstimate != null && calc.svixEstimate > calc.total && (
 						<div className="mt-2 rounded-6px bg-[#EEF6FF] border border-[#2780F1]/20 px-3 py-2.5">
 							<p className="text-12 text-[#2780F1] font-medium">
 								At this volume, the competition average would cost approximately{' '}
 								<strong>${Math.round(calc.svixEstimate).toLocaleString()}/mo</strong>, saving you{' '}
-								<strong>${Math.max(0, Math.round(calc.svixEstimate) - calc.total).toLocaleString()}</strong> with Convoy.
+								<strong>${(Math.round(calc.svixEstimate) - calc.total).toLocaleString()}</strong> with Convoy.
 							</p>
 						</div>
 					)}

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import PricingCards from './_components/PricingCards';
 import FeatureTable from './_components/FeatureTable';
@@ -56,6 +56,18 @@ export default function Pricing() {
 	const [tab, setTab] = useState<Tab>('self-hosted');
 	const [isAnnual, setIsAnnual] = useState(true);
 	const isSelfHosted = tab === 'self-hosted';
+
+	const calcPlans = useMemo(
+		() =>
+			(isSelfHosted ? SELF_HOSTED_PLANS : CLOUD_PLANS).map(p => ({
+				id: p.id,
+				name: p.name,
+				monthlyPrice: p.monthlyPrice,
+				eventsIncluded: p.eventsIncluded,
+				overagePerMillion: p.overagePerMillion,
+			})),
+		[isSelfHosted]
+	);
 
 	return (
 		<main className="flex flex-col items-center pb-120px">
@@ -139,23 +151,7 @@ export default function Pricing() {
 
 				{/* Billing calculator */}
 				<BillingCalculator
-					plans={
-						isSelfHosted
-							? SELF_HOSTED_PLANS.map(p => ({
-									id: p.id,
-									name: p.name,
-									monthlyPrice: p.monthlyPrice,
-									eventsIncluded: p.eventsIncluded,
-									overagePerMillion: p.overagePerMillion,
-							  }))
-							: CLOUD_PLANS.map(p => ({
-									id: p.id,
-									name: p.name,
-									monthlyPrice: p.monthlyPrice,
-									eventsIncluded: p.eventsIncluded,
-									overagePerMillion: p.overagePerMillion,
-							  }))
-					}
+					plans={calcPlans}
 					calcAddons={isSelfHosted ? SELF_HOSTED_CALC_ADDONS : CLOUD_CALC_ADDONS}
 					svixFormula={isSelfHosted ? undefined : SVIX_CLOUD_FORMULA}
 				/>
@@ -167,7 +163,7 @@ export default function Pricing() {
 					title="Price vs volume"
 					subtitle={
 						isSelfHosted
-							? 'Convoy Basic & Scale vs Svix across event volumes'
+							? 'Convoy Basic & Scale vs competition average across event volumes'
 							: 'Convoy Scale vs competition average across event volumes'
 					}
 					callout={

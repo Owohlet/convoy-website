@@ -1,4 +1,5 @@
 'use client';
+import { Fragment } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import check from 'public/svg/check.svg';
@@ -60,8 +61,8 @@ export default function FeatureTable({ groups, tiers }: Props) {
 					</thead>
 					<tbody>
 						{groups.map((group, gi) => (
-							<>
-								<tr key={`group-${gi}`} className="bg-[#f9f9f9] border-b border-t border-[#E7E7E780]">
+							<Fragment key={`group-${gi}`}>
+								<tr className="bg-[#f9f9f9] border-b border-t border-[#E7E7E780]">
 									<td
 										colSpan={tiers.length + 1}
 										className="text-13 font-semibold text-[#444] px-4 py-2.5">
@@ -82,7 +83,7 @@ export default function FeatureTable({ groups, tiers }: Props) {
 										))}
 									</tr>
 								))}
-							</>
+							</Fragment>
 						))}
 					</tbody>
 				</table>
