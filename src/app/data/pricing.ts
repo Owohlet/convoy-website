@@ -70,15 +70,15 @@ export const SELF_HOSTED_FEATURES = [
 			{ name: 'SOC 2 Type II', basic: 'Unsupported', scale: 'Supported', enterprise: 'Supported' },
 			{ name: 'SAML / SSO Enterprise', basic: 'Unsupported', scale: 'Unsupported', enterprise: 'Supported' },
 			{ name: 'VPC Peering / Private Networking', basic: 'Unsupported', scale: 'Unsupported', enterprise: 'Supported' },
-			{ name: 'BAA / HIPAA', basic: 'Unsupported', scale: 'Unsupported', enterprise: 'Add-on (+$400/mo)' },
+			{ name: 'BAA / HIPAA', basic: 'Unsupported', scale: 'Unsupported', enterprise: 'Add-on (+$200/mo)' },
 		],
 	},
 	{
 		title: 'Support',
 		features: [
 			{ name: 'Email Support (48hr)', basic: 'Supported', scale: 'Supported', enterprise: 'Supported' },
-			{ name: 'Dedicated Slack Channel', basic: 'Unsupported', scale: 'Unsupported', enterprise: 'Add-on (+$300/mo)' },
-			{ name: 'Phone + Solutions Engineering', basic: 'Unsupported', scale: 'Unsupported', enterprise: 'Add-on (+$800/mo)' },
+			{ name: 'Dedicated Slack Channel', basic: 'Unsupported', scale: 'Unsupported', enterprise: 'Add-on (+$150/mo)' },
+			{ name: 'Phone + Solutions Engineering', basic: 'Unsupported', scale: 'Unsupported', enterprise: 'Add-on (+$400/mo)' },
 			{ name: 'Response SLA (4hr P1)', basic: 'Unsupported', scale: 'Unsupported', enterprise: 'Supported' },
 		],
 	},
