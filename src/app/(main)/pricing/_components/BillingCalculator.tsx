@@ -3,27 +3,20 @@ import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 type Plan = { id: string; name: string; monthlyPrice: number; eventsIncluded: number; overagePerMillion: number | null };
-type CalcAddon = { id: string; label: string; price: number; tiers: string[]; isNumber?: boolean };
 type SvixFormula = { base: number; includedEvents: number; overagePerEvent: number };
 
 type Props = {
 	plans: Plan[];
-	calcAddons: CalcAddon[];
 	svixFormula?: SvixFormula;
 };
 
-export default function BillingCalculator({ plans, calcAddons, svixFormula }: Props) {
+export default function BillingCalculator({ plans, svixFormula }: Props) {
 	const [selectedPlan, setSelectedPlan] = useState(plans[0].id);
 	const [events, setEvents] = useState(1_000_000);
-	const [addonValues, setAddonValues] = useState<Record<string, boolean | number>>(() =>
-		Object.fromEntries(calcAddons.map(a => [a.id, a.isNumber ? 0 : false]))
-	);
 
-	// Reset when switching between cloud and self-hosted tabs
 	useEffect(() => {
 		setSelectedPlan(plans[0].id);
-		setAddonValues(Object.fromEntries(calcAddons.map(a => [a.id, a.isNumber ? 0 : false])));
-	}, [plans, calcAddons]);
+	}, [plans]);
 
 	const plan = plans.find(p => p.id === selectedPlan) ?? plans[0];
 
@@ -34,33 +27,15 @@ export default function BillingCalculator({ plans, calcAddons, svixFormula }: Pr
 		const overageCharge =
 			plan.overagePerMillion != null ? Math.ceil(overageEvents / 1_000_000) * plan.overagePerMillion : 0;
 
-		const addonLines: { label: string; amount: number }[] = [];
-		let addonTotal = 0;
-
-		for (const addon of calcAddons) {
-			if (!addon.tiers.includes(selectedPlan)) continue;
-			const val = addonValues[addon.id];
-			if (addon.isNumber) {
-				const n = Number(val) || 0;
-				if (n > 0) {
-					addonLines.push({ label: addon.label, amount: n * addon.price });
-					addonTotal += n * addon.price;
-				}
-			} else if (val === true) {
-				addonLines.push({ label: addon.label, amount: addon.price });
-				addonTotal += addon.price;
-			}
-		}
-
-		const total = base + overageCharge + addonTotal;
+		const total = base + overageCharge;
 
 		let svixEstimate: number | null = null;
 		if (svixFormula && (selectedPlan === 'scale' || selectedPlan === 'enterprise') && events > 0) {
 			svixEstimate = svixFormula.base + Math.max(0, events - svixFormula.includedEvents) * svixFormula.overagePerEvent;
 		}
 
-		return { base, included, overageEvents, overageCharge, addonLines, total, svixEstimate };
-	}, [plan, events, addonValues, calcAddons, selectedPlan, svixFormula]);
+		return { base, included, overageEvents, overageCharge, total, svixEstimate };
+	}, [plan, events, selectedPlan, svixFormula]);
 
 	const isFreeCap = plan.overagePerMillion === null && events > plan.eventsIncluded;
 
@@ -86,10 +61,7 @@ export default function BillingCalculator({ plans, calcAddons, svixFormula }: Pr
 							{plans.map(p => (
 								<button
 									key={p.id}
-									onClick={() => {
-										setSelectedPlan(p.id);
-										setAddonValues(Object.fromEntries(calcAddons.map(a => [a.id, a.isNumber ? 0 : false])));
-									}}
+									onClick={() => setSelectedPlan(p.id)}
 									className={`px-3 py-1.5 rounded-6px text-13 font-semibold transition-all ${
 										selectedPlan === p.id ? 'bg-[#2780F1] text-white-100' : 'text-[#555] hover:text-[#000]'
 									}`}>
@@ -118,61 +90,6 @@ export default function BillingCalculator({ plans, calcAddons, svixFormula }: Pr
 							</p>
 						)}
 					</div>
-
-					{/* Add-on toggles */}
-					{calcAddons.some(a => a.tiers.includes(selectedPlan)) && (
-						<div>
-							<label className="text-13 font-semibold text-[#444] block mb-3">Add-ons</label>
-							<div className="flex flex-col gap-3">
-								{calcAddons.map(addon => {
-									const available = addon.tiers.includes(selectedPlan);
-									return (
-										<div
-											key={addon.id}
-											className={`flex items-center justify-between gap-4 ${!available ? 'opacity-40 pointer-events-none' : ''}`}>
-											<div className="flex-1">
-												<span className="text-13 text-[#333]">{addon.label}</span>
-												<span className="text-12 text-[#888] ml-1.5">
-													+${addon.price.toLocaleString()}{addon.isNumber ? '/mo each' : '/mo'}
-												</span>
-											</div>
-											{addon.isNumber ? (
-												<input
-													type="number"
-													min={0}
-													max={20}
-													value={Number(addonValues[addon.id]) || 0}
-													onChange={e =>
-														setAddonValues(prev => ({
-															...prev,
-															[addon.id]: Math.max(0, parseInt(e.target.value) || 0),
-														}))
-													}
-													className="w-16 border border-[#e7e7e7] rounded-6px px-2 py-1 text-13 text-center focus:outline-none focus:border-[#2780F1]"
-												/>
-											) : (
-												<button
-													role="switch"
-													aria-checked={!!addonValues[addon.id]}
-													onClick={() =>
-														setAddonValues(prev => ({ ...prev, [addon.id]: !prev[addon.id] }))
-													}
-													className={`relative flex-shrink-0 transition-colors duration-200 ${
-														addonValues[addon.id] ? 'bg-[#2780F1]' : 'bg-[#D0D5DD]'
-													}`}
-													style={{ width: 36, height: 20, borderRadius: 10 }}>
-													<span
-														className="absolute transition-all duration-200"
-														style={{ top: 2, left: addonValues[addon.id] ? 18 : 2, width: 16, height: 16, borderRadius: '50%', background: '#ffffff', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }}
-													/>
-												</button>
-											)}
-										</div>
-									);
-								})}
-							</div>
-						</div>
-					)}
 				</div>
 
 				{/* Output */}
@@ -188,10 +105,6 @@ export default function BillingCalculator({ plans, calcAddons, svixFormula }: Pr
 							<Line label="Overage charge" value={`$${calc.overageCharge.toLocaleString()}`} />
 						</>
 					)}
-
-					{calc.addonLines.map(line => (
-						<Line key={line.label} label={line.label} value={`$${line.amount.toLocaleString()}`} />
-					))}
 
 					<div className="border-t border-[#e7e7e7] mt-2 pt-3 flex flex-col gap-2">
 						<div className="flex items-center justify-between">

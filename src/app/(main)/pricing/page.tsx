@@ -1,22 +1,17 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import PricingCards from './_components/PricingCards';
 import FeatureTable from './_components/FeatureTable';
-import AddOns from './_components/AddOns';
 import BillingCalculator from './_components/BillingCalculator';
 import VolumeChart from './_components/VolumeChart';
 import EnterpriseCTA from './_components/EnterpriseCTA';
 import {
 	SELF_HOSTED_PLANS,
 	SELF_HOSTED_FEATURES,
-	SELF_HOSTED_ADDONS,
-	SELF_HOSTED_CALC_ADDONS,
 	SELF_HOSTED_VOLUME_DATA,
 	CLOUD_PLANS,
 	CLOUD_FEATURES,
-	CLOUD_ADDONS,
-	CLOUD_CALC_ADDONS,
 	CLOUD_VOLUME_DATA,
 	SVIX_CLOUD_FORMULA,
 } from '@/app/data/pricing';
@@ -56,18 +51,6 @@ export default function Pricing() {
 	const [tab, setTab] = useState<Tab>('self-hosted');
 	const [isAnnual, setIsAnnual] = useState(true);
 	const isSelfHosted = tab === 'self-hosted';
-
-	const calcPlans = useMemo(
-		() =>
-			(isSelfHosted ? SELF_HOSTED_PLANS : CLOUD_PLANS).map(p => ({
-				id: p.id,
-				name: p.name,
-				monthlyPrice: p.monthlyPrice,
-				eventsIncluded: p.eventsIncluded,
-				overagePerMillion: p.overagePerMillion,
-			})),
-		[isSelfHosted]
-	);
 
 	return (
 		<main className="flex flex-col items-center pb-120px">
@@ -146,15 +129,13 @@ export default function Pricing() {
 					tiers={isSelfHosted ? SELF_HOSTED_TIERS : CLOUD_TIERS}
 				/>
 
-				{/* Add-ons */}
-				<AddOns addons={isSelfHosted ? SELF_HOSTED_ADDONS : CLOUD_ADDONS} />
-
-				{/* Billing calculator */}
-				<BillingCalculator
-					plans={calcPlans}
-					calcAddons={isSelfHosted ? SELF_HOSTED_CALC_ADDONS : CLOUD_CALC_ADDONS}
-					svixFormula={isSelfHosted ? undefined : SVIX_CLOUD_FORMULA}
-				/>
+				{/* Billing calculator — cloud only */}
+				{!isSelfHosted && (
+					<BillingCalculator
+						plans={CLOUD_PLANS}
+						svixFormula={SVIX_CLOUD_FORMULA}
+					/>
+				)}
 
 				{/* Volume chart */}
 				<VolumeChart

@@ -20,7 +20,7 @@ export default function EnterpriseCTA() {
 				</div>
 
 				<a
-					href="https://cal.com/subomi/30min"
+					href="https://cal.com/convoy/30min"
 					target="_blank"
 					rel="noopener noreferrer"
 					className="flex items-center justify-center gap-1 bg-[#2780F1] hover:bg-[#1f66c1] text-white-100 text-14 font-semibold px-6 py-3 rounded-8px transition-all duration-300 w-full desktop:w-max group whitespace-nowrap">
